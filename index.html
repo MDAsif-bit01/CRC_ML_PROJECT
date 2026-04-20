@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loan Prediction</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <div class="card">
+
+    <div class="card-header">
+      <div class="logo-mark">🏦</div>
+      <h1>Loan Eligibility</h1>
+      <p class="subtitle">Complete the form to check your loan status</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <form action="/predict" method="post">
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="Age">Age</label>
+          <input type="number" id="Age" name="Age" placeholder="e.g. 30" required />
+        </div>
+
+        <div class="form-group">
+          <label for="Income">Annual Income (₹)</label>
+          <input type="number" id="Income" name="Income" placeholder="e.g. 600000" required />
+        </div>
+
+        <div class="form-group">
+          <label for="Loan_Amount">Loan Amount (₹)</label>
+          <input type="number" id="Loan_Amount" name="Loan_Amount" placeholder="e.g. 200000" required />
+        </div>
+
+        <div class="form-group">
+          <label for="Credit_Score">Credit Score</label>
+          <input type="number" id="Credit_Score" name="Credit_Score" placeholder="300–900" required />
+        </div>
+
+        <div class="form-group">
+          <label for="Employment_Years">Employment Years</label>
+          <input type="number" id="Employment_Years" name="Employment_Years" placeholder="e.g. 5" required />
+        </div>
+
+        <div class="form-group">
+          <label for="Education_Level">Education Level</label>
+          <select id="Education_Level" name="Education_Level">
+            <option value="0">High School</option>
+            <option value="1">Bachelor's</option>
+            <option value="2">Master's</option>
+            <option value="3">PhD</option>
+          </select>
+        </div>
+
+        <div class="form-group full">
+          <label for="Housing_Status">Housing Status</label>
+          <select id="Housing_Status" name="Housing_Status">
+            <option value="0">Rent</option>
+            <option value="1">Mortgage</option>
+            <option value="2">Own</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-submit">Check Eligibility →</button>
+
+      </div>
+    </form>
+
+    {% if prediction_text %}
+      <div class="result {% if 'Not' in prediction_text %}not-eligible{% else %}eligible{% endif %}">
+        {{ prediction_text }}
+      </div>
+    {% endif %}
+
+    <div class="card-footer">Powered by ML · Results are indicative only</div>
+
+  </div>
+
+</body>
+</html>
