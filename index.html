@@ -2,14 +2,155 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Loan Prediction</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Loan Eligibility Form Preview</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap');
+
+    :root {
+      --navy:      #0d1b2a;
+      --navy-mid:  #152236;
+      --navy-card: #1a2b3c;
+      --gold:      #c9a84c;
+      --gold-light:#e6c97a;
+      --text:      #e8ecf0;
+      --muted:     #8a9bb0;
+      --border:    rgba(201,168,76,0.18);
+      --success:   #2ecc87;
+      --danger:    #e05c5c;
+      --radius:    12px;
+      --shadow:    0 24px 60px rgba(0,0,0,0.45);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: var(--navy);
+      background-image:
+        radial-gradient(ellipse at 15% 10%, rgba(201,168,76,0.07) 0%, transparent 55%),
+        repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(255,255,255,0.025) 80px);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 540px;
+      background: var(--navy-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 48px 44px 40px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-header { text-align: center; margin-bottom: 36px; }
+
+    .logo-mark {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 18px; font-size: 22px;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.85rem; font-weight: 700; color: #fff;
+      letter-spacing: -0.02em; line-height: 1.2;
+    }
+
+    .subtitle {
+      margin-top: 8px; font-size: 0.88rem;
+      color: var(--muted); font-weight: 300; letter-spacing: 0.04em;
+    }
+
+    .divider { height: 1px; background: var(--border); margin-bottom: 32px; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 20px; }
+
+    .form-group { display: flex; flex-direction: column; gap: 7px; }
+    .form-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 0.74rem; font-weight: 500;
+      letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted);
+    }
+
+    input[type="number"], select {
+      background: var(--navy-mid);
+      border: 1px solid rgba(138,155,176,0.2);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem; font-weight: 400;
+      padding: 11px 14px; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%; -moz-appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button { display: none; }
+
+    input[type="number"]:focus, select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+    }
+
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a9bb0' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px; cursor: pointer;
+    }
+
+    select option { background: var(--navy-mid); }
+
+    .btn-submit {
+      grid-column: 1 / -1; margin-top: 10px; padding: 14px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--navy); font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem; font-weight: 600; letter-spacing: 0.04em;
+      border: none; border-radius: var(--radius); cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 6px 20px rgba(201,168,76,0.25);
+    }
+
+    .btn-submit:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 10px 28px rgba(201,168,76,0.35); }
+    .btn-submit:active { transform: translateY(0); }
+
+    .result {
+      margin-top: 28px; padding: 16px 20px;
+      border-radius: var(--radius); font-size: 1rem;
+      font-weight: 500; text-align: center;
+      animation: fadeUp 0.4s ease both; letter-spacing: 0.01em;
+      display: none;
+    }
+
+    .result.eligible   { background: rgba(46,204,135,0.1); border: 1px solid rgba(46,204,135,0.3); color: var(--success); }
+    .result.not-eligible { background: rgba(224,92,92,0.1);  border: 1px solid rgba(224,92,92,0.3);  color: var(--danger); }
+
+    .card-footer { margin-top: 28px; text-align: center; font-size: 0.75rem; color: var(--muted); letter-spacing: 0.03em; }
+
+    @media (max-width: 500px) {
+      .card { padding: 36px 24px 30px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full { grid-column: 1; }
+      h1 { font-size: 1.5rem; }
+    }
+  </style>
 </head>
 <body>
-
   <div class="card">
-
     <div class="card-header">
       <div class="logo-mark">🏦</div>
       <h1>Loan Eligibility</h1>
@@ -18,67 +159,76 @@
 
     <div class="divider"></div>
 
-    <form action="/predict" method="post">
-      <div class="form-grid">
-
-        <div class="form-group">
-          <label for="Age">Age</label>
-          <input type="number" id="Age" name="Age" placeholder="e.g. 30" required />
-        </div>
-
-        <div class="form-group">
-          <label for="Income">Annual Income (₹)</label>
-          <input type="number" id="Income" name="Income" placeholder="e.g. 600000" required />
-        </div>
-
-        <div class="form-group">
-          <label for="Loan_Amount">Loan Amount (₹)</label>
-          <input type="number" id="Loan_Amount" name="Loan_Amount" placeholder="e.g. 200000" required />
-        </div>
-
-        <div class="form-group">
-          <label for="Credit_Score">Credit Score</label>
-          <input type="number" id="Credit_Score" name="Credit_Score" placeholder="300–900" required />
-        </div>
-
-        <div class="form-group">
-          <label for="Employment_Years">Employment Years</label>
-          <input type="number" id="Employment_Years" name="Employment_Years" placeholder="e.g. 5" required />
-        </div>
-
-        <div class="form-group">
-          <label for="Education_Level">Education Level</label>
-          <select id="Education_Level" name="Education_Level">
-            <option value="0">High School</option>
-            <option value="1">Bachelor's</option>
-            <option value="2">Master's</option>
-            <option value="3">PhD</option>
-          </select>
-        </div>
-
-        <div class="form-group full">
-          <label for="Housing_Status">Housing Status</label>
-          <select id="Housing_Status" name="Housing_Status">
-            <option value="0">Rent</option>
-            <option value="1">Mortgage</option>
-            <option value="2">Own</option>
-          </select>
-        </div>
-
-        <button type="submit" class="btn-submit">Check Eligibility →</button>
-
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Age</label>
+        <input type="number" id="age" placeholder="e.g. 30" />
       </div>
-    </form>
-
-    {% if prediction_text %}
-      <div class="result {% if 'Not' in prediction_text %}not-eligible{% else %}eligible{% endif %}">
-        {{ prediction_text }}
+      <div class="form-group">
+        <label>Annual Income (₹)</label>
+        <input type="number" id="income" placeholder="e.g. 600000" />
       </div>
-    {% endif %}
+      <div class="form-group">
+        <label>Loan Amount (₹)</label>
+        <input type="number" id="loan" placeholder="e.g. 200000" />
+      </div>
+      <div class="form-group">
+        <label>Credit Score</label>
+        <input type="number" id="credit" placeholder="300–900" />
+      </div>
+      <div class="form-group">
+        <label>Employment Years</label>
+        <input type="number" id="emp" placeholder="e.g. 5" />
+      </div>
+      <div class="form-group">
+        <label>Education Level</label>
+        <select id="edu">
+          <option value="0">High School</option>
+          <option value="1">Bachelor's</option>
+          <option value="2">Master's</option>
+          <option value="3">PhD</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Housing Status</label>
+        <select id="house">
+          <option value="0">Rent</option>
+          <option value="1">Mortgage</option>
+          <option value="2">Own</option>
+        </select>
+      </div>
+      <button class="btn-submit" onclick="checkEligibility()">Check Eligibility →</button>
+    </div>
 
+    <div id="result" class="result"></div>
     <div class="card-footer">Powered by ML · Results are indicative only</div>
-
   </div>
 
+  <script>
+    function checkEligibility() {
+      const age    = document.getElementById('age').value;
+      const income = document.getElementById('income').value;
+      const loan   = document.getElementById('loan').value;
+      const credit = document.getElementById('credit').value;
+      const r      = document.getElementById('result');
+
+      r.className = 'result';
+      r.style.display = 'none';
+
+      if (!age || !income || !loan || !credit) {
+        r.textContent = 'Please fill in all fields.';
+        r.classList.add('not-eligible');
+        r.style.display = 'block';
+        return;
+      }
+
+      const ratio    = loan / income;
+      const eligible = (credit >= 650 && ratio < 0.5 && age >= 21);
+
+      r.textContent = eligible ? 'Eligible for Loan ✅' : 'Not Eligible ❌';
+      r.classList.add(eligible ? 'eligible' : 'not-eligible');
+      r.style.display = 'block';
+    }
+  </script>
 </body>
 </html>
